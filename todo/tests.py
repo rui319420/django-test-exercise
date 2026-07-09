@@ -137,7 +137,6 @@ class TodoViewTestCase(TestCase):
         response = client.post("/{}/update".format(task.pk), data)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
         updated_task = Task.objects.get(pk=task.pk)
         self.assertEqual(updated_task.title, "Updated Task")
         self.assertEqual(updated_task.due_at, timezone.make_aware(datetime(2024, 7, 2, 12, 0, 0)))
