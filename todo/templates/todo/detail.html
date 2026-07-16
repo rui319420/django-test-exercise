@@ -22,6 +22,7 @@
     <button class="theme-toggle-btn" id="themeToggleBtn">🌙</button>
 
     <h1>{{ task.title }}</h1>
+    <h1>{% if task.favorite %}<span class="favorite-mark">★</span> {% endif %}{{ task.title }}</h1>
     <ul>
       <li>Posted at: {{ task.posted_at }}</li>
       {% if task.due_at %}
@@ -32,12 +33,23 @@
       {% else %}
       <li>Status: Not Completed</li>
       {% endif %}
+      {% if task.favorite %}
+      <li>Favorite: Yes</li>
+      {% else %}
+      <li>Favorite: No</li>
+      {% endif %}
     </ul>
 
     <div>
       <a href="{% url 'index' %}">Top</a>
       <a href="{% url 'update' task.id %}">Edit</a>
       <a href="{% url 'delete' task.id %}">Delete</a>
+      <form action="{% url 'favorite' task.id %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit">
+          {% if task.favorite %}Remove Favorite{% else %}Add Favorite{% endif %}
+        </button>
+      </form>
       {% if not task.completed %}
       <form action="{% url 'finish' task.id %}" method="post" style="display: inline;">
         {% csrf_token %}
