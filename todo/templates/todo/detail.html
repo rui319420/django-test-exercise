@@ -25,6 +25,7 @@
     <h1>{% if task.favorite %}<span class="favorite-mark">★</span> {% endif %}{{ task.title }}</h1>
     <ul>
       <li>Posted at: {{ task.posted_at }}</li>
+      <li>Priority: {{ task.get_priority_display }}</li>
       {% if task.due_at %}
       <li>Due at: {{ task.due_at }}</li>
       {% endif %}

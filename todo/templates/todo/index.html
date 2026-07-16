@@ -34,6 +34,14 @@
         <input id="dueInput" name="due_at" type="datetime-local">
       </div>
       <div>
+        <label for="priorityInput">Priority</label><br>
+        <select id="priorityInput" name="priority">
+          <option value="0">Low</option>
+          <option value="1" selected>Medium</option>
+          <option value="2">High</option>
+        </select>
+      </div>
+      <div>
         <button type="submit">Submit</button>
       </div>
     </form>
@@ -41,6 +49,7 @@
 
     <div>
       <a href="{% url 'index' %}?order=due">Sort by Due Date</a> |
+      <a href="{% url 'index' %}?order=priority">Sort by Priority</a> |
       <a href="{% url 'index' %}?order=post">Sort by Posted Date</a>
       |
       {% if show_favorites_only %}
@@ -58,6 +67,7 @@
       </h2>
       <ul>
         <li>Posted at: {{ task.posted_at }}</li>
+        <li>Priority: {{ task.get_priority_display }}</li>
         {% if task.due_at %} 
         <li>Due at: {{ task.due_at }}</li>
         {% endif %}

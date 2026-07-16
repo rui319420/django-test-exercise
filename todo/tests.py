@@ -36,6 +36,14 @@ class TaskModelTestCase(TestCase):
 
         task = Task.objects.get(pk=task.pk)
         self.assertFalse(task.favorite)
+        self.assertEqual(task.priority, Task.PRIORITY_MEDIUM)
+
+    def test_priority_choice_display(self):
+        task = Task(title="task-priority", priority=Task.PRIORITY_HIGH)
+        task.save()
+
+        task = Task.objects.get(pk=task.pk)
+        self.assertEqual(task.get_priority_display(), 'High')
 
     def test_is_overdue_future(self):
         due = timezone.make_aware(datetime(2024, 6, 30, 23, 59, 59))
@@ -91,6 +99,20 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.templates[0].name, "todo/index.html")
         self.assertEqual(response.context["tasks"][0], task2)
         self.assertEqual(response.context["tasks"][1], task1)
+
+    def test_index_get_order_priority(self):
+        task_low = Task(title="task-low", priority=Task.PRIORITY_LOW)
+        task_low.save()
+        task_high = Task(title="task-high", priority=Task.PRIORITY_HIGH)
+        task_high.save()
+        task_med = Task(title="task-med", priority=Task.PRIORITY_MEDIUM)
+        task_med.save()
+        client = Client()
+        response = client.get("/?order=priority")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, "todo/index.html")
+        self.assertEqual(list(response.context["tasks"]), [task_high, task_med, task_low])
 
     def test_index_get_order_due(self):
         task1 = Task(title="task1", due_at=timezone.make_aware(datetime(2024, 7, 1)))
