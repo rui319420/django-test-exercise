@@ -19,10 +19,157 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
-  background: linear-gradient(135deg, #E0FFFF 0%, #FFFACD 100%);
+  background:
+    radial-gradient(circle at top left, rgba(79, 195, 247, 0.22), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(32, 178, 170, 0.18), transparent 28%),
+    linear-gradient(135deg, #E8FAFF 0%, #FFF7E8 100%);
   color: var(--text-dark);
   line-height: 1.6;
   padding: 2rem 1rem;
+}
+
+.page-shell {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.hero-card,
+.panel-grid,
+.task-list {
+  width: min(920px, 100%);
+  margin: 0 auto 1.5rem;
+}
+
+.hero-card {
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 153, 204, 0.12);
+  color: var(--ocean-blue);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-copy {
+  max-width: 42rem;
+  margin: 0.75rem auto 0;
+  color: #46606f;
+}
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.task-form,
+.search-panel {
+  height: 100%;
+}
+
+.search-panel,
+.task-form {
+  background: rgba(255, 255, 255, 0.86);
+  padding: 1.5rem;
+  border-radius: 18px;
+  border: 1px solid rgba(176, 224, 230, 0.9);
+  box-shadow: 0 14px 40px rgba(0, 153, 204, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.search-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.search-form {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  max-width: none;
+}
+
+.search-form label,
+.task-form label {
+  margin-bottom: 0.55rem;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.search-row input {
+  flex: 1;
+}
+
+.search-row button {
+  width: auto;
+  min-width: 110px;
+  white-space: nowrap;
+}
+
+.toolbar {
+  display: grid;
+  gap: 1rem;
+}
+
+.toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolbar-label {
+  min-width: 3rem;
+  color: #4d6472;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 153, 204, 0.18);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--ocean-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+.chip:hover,
+.chip.is-active {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--sea-green));
+  color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 153, 204, 0.18);
+}
+
+.empty-state {
+  margin: 0 auto;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px dashed rgba(176, 224, 230, 0.95);
+  text-align: center;
+  color: #506575;
 }
 
 h1 {
@@ -41,7 +188,7 @@ p {
 }
 
 /* Main Container */
-form, div {
+form, .text {
   max-width: 600px;
   margin: 0 auto 2rem;
 }
@@ -224,10 +371,20 @@ body > div {
   padding: 1rem;
 }
 
-body > div a,
-body > div button[type="submit"] {
-  display: inline-block;
-  margin: 0.4rem 0.35rem;
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-actions a,
+.detail-actions .finish-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
   border: 1px solid var(--border-light);
@@ -238,16 +395,29 @@ body > div button[type="submit"] {
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
 }
 
-body > div a:hover,
-body > div button[type="submit"]:hover {
+.detail-actions a:hover,
+.detail-actions .finish-button:hover {
   background: var(--ocean-blue);
   color: var(--white);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 153, 204, 0.18);
 }
 
-body > div button[type="submit"] {
+.detail-actions .finish-button {
   cursor: pointer;
+  width: auto;
+  min-width: 90px;
+  box-shadow: none;
+}
+
+.finish-form {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border: none;
+  max-width: none;
 }
 
 button[type="submit"] {
@@ -274,12 +444,31 @@ button[type="submit"]:active {
 }
 
 /* Responsive */
+@media (max-width: 760px) {
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-row {
+    flex-direction: column;
+  }
+
+  .search-row button {
+    width: 100%;
+  }
+
+  .toolbar-group {
+    align-items: flex-start;
+  }
+}
+
 @media (max-width: 600px) {
   h1 {
     font-size: 1.8rem;
   }
 
-  form {
+  .search-panel,
+  .task-form {
     padding: 1.5rem;
   }
 
@@ -287,4 +476,71 @@ button[type="submit"]:active {
     display: block;
     margin: 0.5rem 0;
   }
+}
+
+/* --- 「方法1」のメディアクエリに加えて、htmlタグの属性指定を追記 --- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sky-blue: #1b4965;
+    --ocean-blue: #4fc3f7;
+    --sea-green: #4db6ac;
+    --coral: #ff8a65;
+    --sand: #121214;
+    --light-cyan: #1e272c;
+    --white: #1e252b;
+    --text-dark: #eceff1;
+    --border-light: #37474f;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --list-text: #b0bec5;
+  }
+}
+
+/* 手動切り替え用の定義（JavaScriptで html タグに data-theme="dark" が付与された際） */
+html[data-theme="dark"] {
+  --sky-blue: #1b4965;
+  --ocean-blue: #4fc3f7;
+  --sea-green: #4db6ac;
+  --coral: #ff8a65;
+  --sand: #121214;
+  --light-cyan: #1e272c;
+  --white: #1e252b;
+  --text-dark: #eceff1;
+  --border-light: #37474f;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --list-text: #b0bec5;
+}
+
+/* 明示的にライトモードにした場合の定義 */
+html[data-theme="light"] {
+  --sky-blue: #87CEEB;
+  --ocean-blue: #0099CC;
+  --sea-green: #20B2AA;
+  --coral: #FF7F50;
+  --sand: #FFFACD;
+  --light-cyan: #E0FFFF;
+  --white: #FFFFFF;
+  --text-dark: #2C3E50;
+  --border-light: #B0E0E6;
+  --shadow-color: rgba(0, 153, 204, 0.15);
+  --list-text: #34495e;
+}
+
+/* 画面右上に固定表示する切り替えボタン用のスタイル（追記してください） */
+.theme-toggle-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 2px solid var(--border-light);
+  background: var(--white);
+  color: var(--text-dark);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 1000;
+}
+.theme-toggle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px var(--shadow-color);
 }

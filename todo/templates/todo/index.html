@@ -7,64 +7,221 @@
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
     <link rel="stylesheet" type="text/css" href="{% static 'todo/style.css' %}">
+
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+      })();
+    </script>
   </head>
 
   <body>
-    <h1>Sample To Do Application</h1>
-    <p>You can submit tasks from the following form.</p>
-    <form action="{% url 'index' %}" method="post">
-      {% csrf_token %}
-      <div>
-        <label for="titleInput">Title</label><br>
-        <input id="titleInput" name="title" type="text" placeholder="Input title">
-      </div>
-      <div>
-        <label for="dueInput">Due at:</label><br>
-        <input id="dueInput" name="due_at" type="datetime-local">
-      </div>
-      <div>
-        <label for="tagsInput">Tags</label><br>
-        <input id="tagsInput" name="tags" type="text" placeholder="Input tags separated by commas">
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-    <br>
+    <button class="theme-toggle-btn" id="themeToggleBtn">🌙</button>
 
-    <div>
-      <a href="{% url 'index' %}?order=due">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post">Sort by Posted Date</a>
-      |
-      {% if show_favorites_only %}
-      <a href="{% url 'index' %}">Show All Tasks</a>
-      {% else %}
-      <a href="{% url 'index' %}?favorite=1">Show Favorites Only</a>
-      {% endif %}
-    </div>
+    <main class="page-shell">
+      <section class="hero-card">
+        <p class="eyebrow">Task manager</p>
+        <h1>Sample To Do Application</h1>
+        <p class="hero-copy">
+          Add tasks, narrow them down instantly, and keep the important ones in view.
+        </p>
 
-    {% for task in tasks %}
-    <div class="text">
-      <h2>
-        {% if task.favorite %}<span class="favorite-mark">★</span>{% endif %}
-        <a href="{% url 'detail' task.id %}">{{ task.title }}</a>
-      </h2>
-      <ul>
-        <li>Posted at: {{ task.posted_at }}</li>
-        {% if task.tags %}
-        <li>Tags: {{ task.tags }}</li>
-        {% endif %}
-        {% if task.due_at %} 
-        <li>Due at: {{ task.due_at }}</li>
-        {% endif %}
-        {% if task.completed %} 
-        <li>Status: Completed</li>
+        <div style="margin-top: 1.5rem;">
+          <a
+            href="{% url 'minesweeper' %}"
+            style="display: inline-block; padding: 0.5rem 1rem; border-radius: 20px; background-color: var(--sea-green); color: var(--white); text-decoration: none; font-weight: bold; font-size: 0.9rem; border: 1px solid var(--border-light); transition: all 0.3s;"
+          >
+            Play Minesweeper 🎮
+          </a>
+        </div>
+      </section>
+
+      <section class="panel-grid">
+        <form class="task-form" action="{% url 'index' %}" method="post">
+          {% csrf_token %}
+
+          <div>
+            <label for="titleInput">Title</label>
+            <input
+              id="titleInput"
+              name="title"
+              type="text"
+              placeholder="Input title"
+            >
+          </div>
+
+          <div>
+            <label for="dueInput">Due at</label>
+            <input
+              id="dueInput"
+              name="due_at"
+              type="datetime-local"
+            >
+          </div>
+
+          <div>
+            <label for="tagsInput">Tags</label>
+            <input
+              id="tagsInput"
+              name="tags"
+              type="text"
+              placeholder="Input tags separated by commas"
+            >
+          </div>
+
+          <div>
+            <button type="submit">Submit</button>
+          </div>
+        </form>
+
+        <section class="search-panel">
+          <form class="search-form" action="{% url 'index' %}" method="get">
+            {% if current_order %}
+              <input
+                type="hidden"
+                name="order"
+                value="{{ current_order }}"
+              >
+            {% endif %}
+
+            {% if show_favorites_only %}
+              <input type="hidden" name="favorite" value="1">
+            {% endif %}
+
+            <label for="searchInput">Search tasks</label>
+
+            <div class="search-row">
+              <input
+                id="searchInput"
+                name="q"
+                type="search"
+                placeholder="Search by title"
+                value="{{ search_query }}"
+              >
+              <button type="submit">Search</button>
+            </div>
+          </form>
+
+          <div class="toolbar">
+            <div class="toolbar-group">
+              <span class="toolbar-label">Sort</span>
+
+              <a
+                class="chip {% if current_order == 'due' %}is-active{% endif %}"
+                href="{% url 'index' %}?{{ sort_by_due_query }}"
+              >
+                Due Date
+              </a>
+
+              <a
+                class="chip {% if current_order != 'due' %}is-active{% endif %}"
+                href="{% url 'index' %}?{{ sort_by_post_query }}"
+              >
+                Posted Date
+              </a>
+            </div>
+
+            <div class="toolbar-group">
+              <span class="toolbar-label">Filter</span>
+
+              {% if show_favorites_only %}
+                <a
+                  class="chip is-active"
+                  href="{% url 'index' %}?{{ show_all_query }}"
+                >
+                  All Tasks
+                </a>
+              {% else %}
+                <a
+                  class="chip"
+                  href="{% url 'index' %}?{{ show_favorites_query }}"
+                >
+                  Favorites Only
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="task-list">
+        {% if tasks %}
+          {% for task in tasks %}
+            <article class="text">
+              <h2>
+                {% if task.favorite %}
+                  <span class="favorite-mark">★</span>
+                {% endif %}
+
+                <a href="{% url 'detail' task.id %}">
+                  {{ task.title }}
+                </a>
+              </h2>
+
+              <ul>
+                <li>Posted at: {{ task.posted_at }}</li>
+
+                {% if task.tags %}
+                  <li>Tags: {{ task.tags }}</li>
+                {% endif %}
+
+                {% if task.due_at %}
+                  <li>Due at: {{ task.due_at }}</li>
+                {% endif %}
+
+                {% if task.completed %}
+                  <li>Status: Completed</li>
+                {% else %}
+                  <li>Status: Not Completed</li>
+                {% endif %}
+              </ul>
+            </article>
+          {% endfor %}
         {% else %}
-        <li>Status: Not Completed</li>
+          <div class="empty-state">
+            <p>No tasks match your search.</p>
+          </div>
         {% endif %}
-      </ul>
-    </div>
-    {% endfor %}
+      </section>
+    </main>
+
+    <script>
+      const toggleBtn = document.getElementById('themeToggleBtn');
+
+      function updateButtonText(theme) {
+        toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      }
+
+      const currentTheme =
+        document.documentElement.getAttribute('data-theme') ||
+        (
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+        );
+
+      updateButtonText(currentTheme);
+
+      toggleBtn.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+
+        if (!theme) {
+          theme =
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+        }
+
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateButtonText(newTheme);
+      });
+    </script>
   </body>
 
 </html>

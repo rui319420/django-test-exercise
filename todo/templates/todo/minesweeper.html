@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <title>Minesweeper</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="INIAD">
+    <link rel="stylesheet" type="text/css" href="{% static 'todo/style.css' %}">
+    <style>
+      /* マインスイーパー独自のスタイル調整 */
+      #minesweeper-board {
+        display: grid;
+        grid-template-columns: repeat(9, 40px);
+        grid-template-rows: repeat(9, 40px);
+        gap: 2px;
+        margin: 20px auto;
+        justify-content: center;
+        background-color: var(--border-light);
+        padding: 5px;
+        border-radius: 8px;
+        width: fit-content;
+      }
+
+      .cell {
+        width: 40px;
+        height: 40px;
+        background-color: var(--sky-blue);
+        border: 1px solid var(--border-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        cursor: pointer;
+        user-select: none;
+        font-size: 1.2rem;
+        border-radius: 4px;
+        color: var(--text-dark);
+      }
+
+      .cell.revealed {
+        background-color: var(--white);
+        cursor: default;
+      }
+
+      .cell.mine {
+        background-color: var(--coral);
+      }
+
+      .game-status {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 10px 0;
+        color: var(--sea-green);
+      }
+    </style>
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <button class="theme-toggle-btn" id="themeToggleBtn">🌙 Mode</button>
+
+    <h1>Minesweeper</h1>
+    <p>Find all the safe cells without stepping on mines!</p>
+
+    <div class="game-status" id="statusMessage">Game Running</div>
+
+    <div id="minesweeper-board"></div>
+
+    <div style="text-align: center;">
+      <button onclick="initGame()" style="padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; background-color: var(--ocean-blue); color: var(--white); border: none; font-weight: bold;">Restart Game</button>
+      <br><br>
+      <a href="{% url 'index' %}">Back to Top</a>
+    </div>
+
+    <script>
+      const size = 9;
+      const mineCount = 10;
+      let board = [];
+      let revealedCount = 0;
+      let gameOver = false;
+
+      function initGame() {
+        gameOver = false;
+        revealedCount = 0;
+        document.getElementById('statusMessage').textContent = 'Game Running';
+        document.getElementById('statusMessage').style.color = 'var(--sea-green)';
+        
+        const boardDiv = document.getElementById('minesweeper-board');
+        boardDiv.innerHTML = '';
+        
+        // ボードデータの初期化
+        board = Array.from({ length: size }, () =>
+          Array.from({ length: size }, () => ({
+            isMine: false,
+            revealed: false,
+            count: 0
+          }))
+        );
+
+        // 地雷の設置
+        let placedMines = 0;
+        while (placedMines < mineCount) {
+          const r = Math.floor(Math.random() * size);
+          const c = Math.floor(Math.random() * size);
+          if (!board[r][c].isMine) {
+            board[r][c].isMine = true;
+            placedMines++;
+          }
+        }
+
+        // 周囲の地雷数カウント
+        for (let r = 0; r < size; r++) {
+          for (let c = 0; c < size; c++) {
+            if (board[r][c].isMine) continue;
+            let count = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < size && nc >= 0 && nc < size && board[nr][nc].isMine) {
+                  count++;
+                }
+              }
+            }
+            board[r][c].count = count;
+          }
+        }
+
+        // セルのHTML要素を生成
+        for (let r = 0; r < size; r++) {
+          for (let c = 0; c < size; c++) {
+            const cellElement = document.createElement('div');
+            cellElement.classList.add('cell');
+            cellElement.dataset.row = r;
+            cellElement.dataset.col = c;
+            
+            cellElement.addEventListener('click', () => handleCellClick(r, c));
+            cellElement.addEventListener('contextmenu', (e) => {
+              e.preventDefault();
+              handleRightClick(cellElement);
+            });
+            boardDiv.appendChild(cellElement);
+          }
+        }
+      }
+
+      function handleCellClick(r, c) {
+        if (gameOver || board[r][c].revealed) return;
+
+        const cellElement = document.querySelector(`[data-row='${r}'][data-col='${c}']`);
+        if (cellElement.textContent === '🚩') return;
+
+        revealCell(r, c);
+
+        // 勝利判定
+        if (revealedCount === size * size - mineCount && !gameOver) {
+          gameOver = true;
+          document.getElementById('statusMessage').textContent = '🎉 You Win!';
+          document.getElementById('statusMessage').style.color = '#4db6ac';
+        }
+      }
+
+      function handleRightClick(cellElement) {
+        if (gameOver) return;
+        const r = cellElement.dataset.row;
+        const c = cellElement.dataset.col;
+        if (board[r][c].revealed) return;
+
+        if (cellElement.textContent === '🚩') {
+          cellElement.textContent = '';
+        } else {
+          cellElement.textContent = '🚩';
+        }
+      }
+
+      function revealCell(r, c) {
+        if (r < 0 || r >= size || c < 0 || c >= size || board[r][c].revealed) return;
+
+        board[r][c].revealed = true;
+        revealedCount++;
+
+        const cellElement = document.querySelector(`[data-row='${r}'][data-col='${c}']`);
+        cellElement.classList.add('revealed');
+
+        if (board[r][c].isMine) {
+          cellElement.classList.add('mine');
+          cellElement.textContent = '💣';
+          endGame(false);
+          return;
+        }
+
+        if (board[r][c].count > 0) {
+          cellElement.textContent = board[r][c].count;
+        } else {
+          // 隣接する安全なセルを再帰的にオープン
+          for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+              revealCell(r + dr, c + dc);
+            }
+          }
+        }
+      }
+
+      function endGame(isWin) {
+        gameOver = true;
+        if (!isWin) {
+          document.getElementById('statusMessage').textContent = '💥 Game Over!';
+          document.getElementById('statusMessage').style.color = 'var(--coral)';
+          // すべての地雷を表示
+          for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+              if (board[r][c].isMine) {
+                const cellElement = document.querySelector(`[data-row='${r}'][data-col='${c}']`);
+                cellElement.classList.add('revealed', 'mine');
+                cellElement.textContent = '💣';
+              }
+            }
+          }
+        }
+      }
+
+      initGame();
+    </script>
+
+    <script>
+      const toggleBtn = document.getElementById('themeToggleBtn');
+      
+      function updateButtonText(theme) {
+        toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      }
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      updateButtonText(currentTheme);
+
+      toggleBtn.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+        if (!theme) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateButtonText(newTheme);
+      });
+    </script>
+  </body>
+
+</html>
