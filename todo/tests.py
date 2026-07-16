@@ -27,7 +27,15 @@ class TaskModelTestCase(TestCase):
 
         task = Task.objects.get(pk=task.pk)
         self.assertFalse(task.completed)
+        self.assertFalse(task.favorite)
         self.assertEqual(task.due_at, None)
+
+    def test_create_task_favorite_default_false(self):
+        task = Task(title="task3")
+        task.save()
+
+        task = Task.objects.get(pk=task.pk)
+        self.assertFalse(task.favorite)
 
     def test_is_overdue_future(self):
         due = timezone.make_aware(datetime(2024, 6, 30, 23, 59, 59))
@@ -97,6 +105,29 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.context["tasks"][0], task1)
         self.assertEqual(response.context["tasks"][1], task2)
 
+    def test_index_get_favorite_only(self):
+        favorite_task = Task(title="favorite", favorite=True)
+        favorite_task.save()
+        normal_task = Task(title="normal")
+        normal_task.save()
+        client = Client()
+        response = client.get("/?favorite=1")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, "todo/index.html")
+        self.assertEqual(len(response.context["tasks"]), 1)
+        self.assertEqual(response.context["tasks"][0], favorite_task)
+        self.assertTrue(response.context["show_favorites_only"])
+
+    def test_detail_get_shows_favorite_mark(self):
+        task = Task(title="task1", favorite=True, due_at=timezone.make_aware(datetime(2024, 7, 1)))
+        task.save()
+        client = Client()
+        response = client.get("/{}/".format(task.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "★")
+
     def test_detail_get_success(self):
         task = Task(title="task1", due_at=timezone.make_aware(datetime(2024, 7, 1)))
         task.save()
@@ -157,3 +188,17 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Task.objects.get(pk=task.pk).completed)
         self.assertEqual(response.url, "/{}/".format(task.pk))
+
+    def test_favorite_post_toggle_success(self):
+        task = Task(title="task1", due_at=timezone.make_aware(datetime(2024, 7, 1)))
+        task.save()
+        client = Client()
+
+        response = client.post("/{}/favorite".format(task.pk))
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Task.objects.get(pk=task.pk).favorite)
+        self.assertEqual(response.url, "/{}/".format(task.pk))
+
+        response = client.post("/{}/favorite".format(task.pk))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Task.objects.get(pk=task.pk).favorite)
