@@ -23,14 +23,14 @@
       {% endif %}
     </ul>
 
-    <div>
+    <div class="detail-actions">
       <a href="{% url 'index' %}">Top</a>
       <a href="{% url 'update' task.id %}">Edit</a>
       <a href="{% url 'delete' task.id %}">Delete</a>
       {% if not task.completed %}
-      <form action="{% url 'finish' task.id %}" method="post" style="display: inline;">
+      <form class="finish-form" action="{% url 'finish' task.id %}" method="post">
         {% csrf_token %}
-        <button type="submit">Finish</button>
+        <button class="finish-button" type="submit">Finish</button>
       </form>
       {% endif %}
     </div>
