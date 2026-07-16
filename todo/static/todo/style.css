@@ -224,10 +224,20 @@ body > div {
   padding: 1rem;
 }
 
-body > div a,
-body > div button[type="submit"] {
-  display: inline-block;
-  margin: 0.4rem 0.35rem;
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-actions a,
+.detail-actions .finish-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
   border: 1px solid var(--border-light);
@@ -238,16 +248,29 @@ body > div button[type="submit"] {
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
 }
 
-body > div a:hover,
-body > div button[type="submit"]:hover {
+.detail-actions a:hover,
+.detail-actions .finish-button:hover {
   background: var(--ocean-blue);
   color: var(--white);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 153, 204, 0.18);
 }
 
-body > div button[type="submit"] {
+.detail-actions .finish-button {
   cursor: pointer;
+  width: auto;
+  min-width: 90px;
+  box-shadow: none;
+}
+
+.finish-form {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border: none;
+  max-width: none;
 }
 
 button[type="submit"] {
