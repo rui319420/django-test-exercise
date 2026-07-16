@@ -3,12 +3,20 @@ from django.utils import timezone
 
 
 # Create your models here.
+class Group(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
 class Task(models.Model):
     title = models.CharField(max_length=100)
     completed = models.BooleanField(default=False)
     favorite = models.BooleanField(default=False)
     posted_at = models.DateTimeField(default=timezone.now)
     due_at = models.DateTimeField(null=True, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
 
     def is_overdue(self, dt):
         if self.due_at is None:
