@@ -23,6 +23,10 @@
         <input id="dueInput" name="due_at" type="datetime-local">
       </div>
       <div>
+        <label for="tagsInput">Tags</label><br>
+        <input id="tagsInput" name="tags" type="text" placeholder="Input tags separated by commas">
+      </div>
+      <div>
         <button type="submit">Submit</button>
       </div>
     </form>
@@ -47,6 +51,9 @@
       </h2>
       <ul>
         <li>Posted at: {{ task.posted_at }}</li>
+        {% if task.tags %}
+        <li>Tags: {{ task.tags }}</li>
+        {% endif %}
         {% if task.due_at %} 
         <li>Due at: {{ task.due_at }}</li>
         {% endif %}
