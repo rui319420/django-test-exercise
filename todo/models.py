@@ -13,6 +13,7 @@ class Group(models.Model):
 class Task(models.Model):
     title = models.CharField(max_length=100)
     completed = models.BooleanField(default=False)
+    favorite = models.BooleanField(default=False)
     posted_at = models.DateTimeField(default=timezone.now)
     due_at = models.DateTimeField(null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
