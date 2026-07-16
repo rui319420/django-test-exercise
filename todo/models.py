@@ -21,6 +21,7 @@ class Task(models.Model):
     ]
 
     title = models.CharField(max_length=100)
+    tags = models.CharField(max_length=255, blank=True, default="")
     completed = models.BooleanField(default=False)
     favorite = models.BooleanField(default=False)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MEDIUM)

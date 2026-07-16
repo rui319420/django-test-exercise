@@ -40,6 +40,8 @@
           <option value="1" {% if task.priority == 1 %}selected{% endif %}>Medium</option>
           <option value="2" {% if task.priority == 2 %}selected{% endif %}>High</option>
         </select>
+        <label for="tagsInput">Tags</label><br>
+        <input id="tagsInput" name="tags" type="text" placeholder="Input tags separated by commas" value="{{ task.tags }}">
       </div>
       <div>
         <button type="submit">Submit</button>
