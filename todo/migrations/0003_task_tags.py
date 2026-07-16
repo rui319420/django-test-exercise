@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('todo', '0002_task_favorite'),
+        ('todo', '0003_merge_0002_group_task_group_0002_task_favorite'),
     ]
 
     operations = [
