@@ -20,12 +20,17 @@
 
   <body>
     <button class="theme-toggle-btn" id="themeToggleBtn">🌙</button>
+    
 
     <main class="page-shell">
       <section class="hero-card">
         <p class="eyebrow">Task manager</p>
         <h1>Sample To Do Application</h1>
         <p class="hero-copy">Add tasks, narrow them down instantly, and keep the important ones in view.</p>
+        
+        <div style="margin-top: 1.5rem;">
+          <a href="{% url 'minesweeper' %}" style="display: inline-block; padding: 0.5rem 1rem; border-radius: 20px; background-color: var(--sea-green); color: var(--white); text-decoration: none; font-weight: bold; font-size: 0.9rem; border: 1px solid var(--border-light); transition: all 0.3s;">Play Minesweeper 🎮</a>
+        </div>
       </section>
 
       <section class="panel-grid">
@@ -79,29 +84,29 @@
 
       <section class="task-list">
         {% if tasks %}
-        {% for task in tasks %}
-        <article class="text">
-          <h2>
-            {% if task.favorite %}<span class="favorite-mark">★</span>{% endif %}
-            <a href="{% url 'detail' task.id %}">{{ task.title }}</a>
-          </h2>
-          <ul>
-            <li>Posted at: {{ task.posted_at }}</li>
-            {% if task.due_at %}
-            <li>Due at: {{ task.due_at }}</li>
-            {% endif %}
-            {% if task.completed %}
-            <li>Status: Completed</li>
-            {% else %}
-            <li>Status: Not Completed</li>
-            {% endif %}
-          </ul>
-        </article>
-        {% endfor %}
+          {% for task in tasks %}
+          <article class="text">
+            <h2>
+              {% if task.favorite %}<span class="favorite-mark">★</span>{% endif %}
+              <a href="{% url 'detail' task.id %}">{{ task.title }}</a>
+            </h2>
+            <ul>
+              <li>Posted at: {{ task.posted_at }}</li>
+              {% if task.due_at %}
+              <li>Due at: {{ task.due_at }}</li>
+              {% endif %}
+              {% if task.completed %}
+              <li>Status: Completed</li>
+              {% else %}
+              <li>Status: Not Completed</li>
+              {% endif %}
+            </ul>
+          </article>
+          {% endfor %}
         {% else %}
-        <div class="empty-state">
-          <p>No tasks match your search.</p>
-        </div>
+          <div class="empty-state">
+            <p>No tasks match your search.</p>
+          </div>
         {% endif %}
       </section>
     </main>

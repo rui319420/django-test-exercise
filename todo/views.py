@@ -112,3 +112,6 @@ def favorite(request, task_id):
         task.save()
 
     return redirect("detail", task_id=task_id)
+
+def minesweeper(request):
+    return render(request, "todo/minesweeper.html")
