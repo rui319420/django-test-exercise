@@ -20,6 +20,7 @@
 
   <body>
     <button class="theme-toggle-btn" id="themeToggleBtn">🌙</button>
+    
 
     <h1>Sample To Do Application</h1>
     <p>You can submit tasks from the following form.</p>
@@ -48,6 +49,10 @@
       {% else %}
       <a href="{% url 'index' %}?favorite=1">Show Favorites Only</a>
       {% endif %}
+    </div>
+
+    <div style="text-align: center;">
+      <a href="{% url 'minesweeper' %}" style="display: inline-block; padding: 0.5rem 1rem; border-radius: 5px; background-color: var(--sea-green); color: var(--white); text-decoration: none; font-weight: bold;">Play Minesweeper</a>
     </div>
 
     {% for task in tasks %}
