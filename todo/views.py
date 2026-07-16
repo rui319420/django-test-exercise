@@ -6,12 +6,17 @@ from urllib.parse import urlencode
 from todo.models import Task
 
 
+def normalize_tags(raw_tags):
+    return ", ".join(tag.strip() for tag in raw_tags.split(",") if tag.strip())
+
+
 # Create your views here.
 def index(request):
     if request.method == "POST":
         task = Task(
             title=request.POST["title"],
             due_at=make_aware(parse_datetime(request.POST["due_at"])),
+            tags=normalize_tags(request.POST.get("tags", "")),
         )
         task.save()
 
@@ -74,6 +79,7 @@ def update(request, task_id):
     if request.method == 'POST':
         task.title = request.POST['title']
         task.due_at = make_aware(parse_datetime(request.POST['due_at']))
+        task.tags = normalize_tags(request.POST.get("tags", ""))
         task.save()
         return redirect(detail, task_id)
 

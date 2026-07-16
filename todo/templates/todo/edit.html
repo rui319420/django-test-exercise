@@ -34,6 +34,10 @@
         <input id="dueInput" name="due_at" type="datetime-local" value="{{ task.due_at |date:"Y-m-d H:i" }}">
       </div>
       <div>
+        <label for="tagsInput">Tags</label><br>
+        <input id="tagsInput" name="tags" type="text" placeholder="Input tags separated by commas" value="{{ task.tags }}">
+      </div>
+      <div>
         <button type="submit">Submit</button>
       </div>
     </form>

@@ -12,6 +12,7 @@ class Group(models.Model):
     
 class Task(models.Model):
     title = models.CharField(max_length=100)
+    tags = models.CharField(max_length=255, blank=True, default="")
     completed = models.BooleanField(default=False)
     favorite = models.BooleanField(default=False)
     posted_at = models.DateTimeField(default=timezone.now)
