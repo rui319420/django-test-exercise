@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
+from urllib.parse import urlencode
 from todo.models import Task
 
 
@@ -18,19 +19,43 @@ def index(request):
         task.save()
 
     tasks = Task.objects.all()
-    if request.GET.get("favorite") == "1":
+    search_query = request.GET.get("q", "").strip()
+    if search_query:
+        tasks = tasks.filter(title__icontains=search_query)
+
+    show_favorites_only = request.GET.get("favorite") == "1"
+    if show_favorites_only:
         tasks = tasks.filter(favorite=True)
 
-    if request.GET.get("order") == "priority":
+    order = request.GET.get("order")
+    if order == "priority":
         tasks = tasks.order_by("-priority", "-posted_at")
-    elif request.GET.get("order") == "due":
+    elif order == "due":
         tasks = tasks.order_by("due_at")
     else:
         tasks = tasks.order_by("-posted_at")
 
+    def build_query(include_favorite=True, **overrides):
+        params = {}
+        if search_query:
+            params["q"] = search_query
+        if include_favorite and show_favorites_only:
+            params["favorite"] = "1"
+        if order in ("due", "post", "priority"):
+            params["order"] = order
+        params.update({key: value for key, value in overrides.items() if value is not None})
+        return urlencode(params)
+
     context = {
         "tasks": tasks,
-        "show_favorites_only": request.GET.get("favorite") == "1",
+        "current_order": order if order in ("due", "post", "priority") else "",
+        "search_query": search_query,
+        "show_favorites_only": show_favorites_only,
+        "search_form_query": build_query(),
+        "sort_by_due_query": build_query(order="due"),
+        "sort_by_post_query": build_query(order="post"),
+        "show_favorites_query": build_query(favorite="1"),
+        "show_all_query": build_query(include_favorite=False),
     }
     return render(request, "todo/index.html", context)
 
@@ -91,6 +116,3 @@ def favorite(request, task_id):
 
     if request.method == "POST":
         task.favorite = not task.favorite
-        task.save()
-
-    return redirect("detail", task_id=task_id)

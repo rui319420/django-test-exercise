@@ -141,6 +141,34 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.context["tasks"][0], favorite_task)
         self.assertTrue(response.context["show_favorites_only"])
 
+    def test_index_get_search_query_filters_by_title(self):
+        target_task = Task(title="Buy milk")
+        target_task.save()
+        other_task = Task(title="Walk dog")
+        other_task.save()
+        client = Client()
+        response = client.get("/?q=milk")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, "todo/index.html")
+        self.assertEqual(len(response.context["tasks"]), 1)
+        self.assertEqual(response.context["tasks"][0], target_task)
+
+    def test_index_get_search_query_combined_with_favorite_filter(self):
+        matching_favorite = Task(title="Milk task", favorite=True)
+        matching_favorite.save()
+        non_favorite = Task(title="Milk task")
+        non_favorite.save()
+        unrelated_favorite = Task(title="Bread task", favorite=True)
+        unrelated_favorite.save()
+        client = Client()
+        response = client.get("/?q=Milk&favorite=1")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, "todo/index.html")
+        self.assertEqual(len(response.context["tasks"]), 1)
+        self.assertEqual(response.context["tasks"][0], matching_favorite)
+
     def test_detail_get_shows_favorite_mark(self):
         task = Task(title="task1", favorite=True, due_at=timezone.make_aware(datetime(2024, 7, 1)))
         task.save()
