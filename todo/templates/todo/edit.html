@@ -7,12 +7,23 @@
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
     <link rel="stylesheet" type="text/css" href="{% static 'todo/style.css' %}">
+
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+      })();
+    </script>
   </head>
 
   <body>
+    <button class="theme-toggle-btn" id="themeToggleBtn">🌙</button>
+
     <h1>Edit task</h1>
     <p>You can edit tasks from the following form.</p>
-    <form action="{% url 'update' task.id%}" method="post">
+    <form action="{% url 'update' task.id %}" method="post">
       {% csrf_token %}
       <div>
         <label for="titleInput">Title</label><br>
@@ -27,6 +38,30 @@
       </div>
     </form>
     <br>
+
+    <script>
+      const toggleBtn = document.getElementById('themeToggleBtn');
+      
+      function updateButtonText(theme) {
+        toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      }
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      updateButtonText(currentTheme);
+
+      toggleBtn.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+        if (!theme) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateButtonText(newTheme);
+      });
+    </script>
   </body>
 
 </html>

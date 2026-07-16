@@ -311,3 +311,70 @@ button[type="submit"]:active {
     margin: 0.5rem 0;
   }
 }
+
+/* --- 「方法1」のメディアクエリに加えて、htmlタグの属性指定を追記 --- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sky-blue: #1b4965;
+    --ocean-blue: #4fc3f7;
+    --sea-green: #4db6ac;
+    --coral: #ff8a65;
+    --sand: #121214;
+    --light-cyan: #1e272c;
+    --white: #1e252b;
+    --text-dark: #eceff1;
+    --border-light: #37474f;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --list-text: #b0bec5;
+  }
+}
+
+/* 手動切り替え用の定義（JavaScriptで html タグに data-theme="dark" が付与された際） */
+html[data-theme="dark"] {
+  --sky-blue: #1b4965;
+  --ocean-blue: #4fc3f7;
+  --sea-green: #4db6ac;
+  --coral: #ff8a65;
+  --sand: #121214;
+  --light-cyan: #1e272c;
+  --white: #1e252b;
+  --text-dark: #eceff1;
+  --border-light: #37474f;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --list-text: #b0bec5;
+}
+
+/* 明示的にライトモードにした場合の定義 */
+html[data-theme="light"] {
+  --sky-blue: #87CEEB;
+  --ocean-blue: #0099CC;
+  --sea-green: #20B2AA;
+  --coral: #FF7F50;
+  --sand: #FFFACD;
+  --light-cyan: #E0FFFF;
+  --white: #FFFFFF;
+  --text-dark: #2C3E50;
+  --border-light: #B0E0E6;
+  --shadow-color: rgba(0, 153, 204, 0.15);
+  --list-text: #34495e;
+}
+
+/* 画面右上に固定表示する切り替えボタン用のスタイル（追記してください） */
+.theme-toggle-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 2px solid var(--border-light);
+  background: var(--white);
+  color: var(--text-dark);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 1000;
+}
+.theme-toggle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px var(--shadow-color);
+}
